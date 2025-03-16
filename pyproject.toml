@@ -1,0 +1,25 @@
+[project]
+name = "blogging-app"
+version = "0.1.0"
+description = "Blogging app in Django"
+authors = [
+    {name = "Marek Štec",email = "mar.stec@seznam.cz"}
+]
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "django (>=5.1.7,<6.0.0)",
+    "psycopg (>=3.2.6,<4.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.group.dev.dependencies]
+django-extensions = "^3.2.3"
+ipython = "^9.0.2"
+
+[tool.poetry]
+package-mode = false
