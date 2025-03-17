@@ -62,3 +62,10 @@ class ArticleSerializer(serializers.ModelSerializer):
 
     def get_categories_display(self, obj):
         return [category.name for category in obj.categories.all()]
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Category
+        fields = ["name"]

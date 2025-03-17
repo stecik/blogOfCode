@@ -1,30 +1,47 @@
-from django.shortcuts import render
-from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from .serializers import (
     RegisterSerializer,
     UserSerializer,
     CustomTokenObtainPairSerializer,
+    ChangePasswordSerializer,
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
+from rest_framework import generics
+from django.contrib.auth import get_user_model
+
+CustomUser = get_user_model()
 
 
-@api_view(["POST"])
-@permission_classes([AllowAny])
-def register_user(request):
-    serializer = RegisterSerializer(data=request.data)
-    if serializer.is_valid():
-        user = serializer.save()
-        return Response(UserSerializer(user).data, status=201)
-    return Response(serializer.errors, status=400)
+class UserCreateView(generics.CreateAPIView):
+    queryset = CustomUser.objects.all()
+    serializer_class = RegisterSerializer
+    permission_classes = [AllowAny]
 
 
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def get_user_data(request):
-    serializer = UserSerializer(request.user)
-    return Response(serializer.data)
+class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+
+class ChangePasswordView(generics.UpdateAPIView):
+    serializer_class = ChangePasswordSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        return self.request.user
+
+    def update(self, request, *args, **kwargs):
+        serializer = self.get_serializer(
+            data=request.data, context={"request": request}
+        )
+        if serializer.is_valid():
+            serializer.update(self.get_object(), serializer.validated_data)
+            return Response({"detail": "Password changed successfully"}, status=200)
+        return Response(serializer.errors, status=400)
 
 
 class CustomTokenObtainPairView(TokenObtainPairView):
