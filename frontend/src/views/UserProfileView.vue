@@ -3,9 +3,11 @@ import { ref, reactive, onMounted } from 'vue';
 import { useToast } from 'vue-toastification';
 import { validatePassword } from '@/utils/passwdValidation';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const toast = useToast();
+const authStore = useAuthStore();
 
 const userData = reactive({
     data: {},
@@ -20,11 +22,12 @@ const changePasswdForm = reactive({
 const newPasswordAgain = ref("");
 
 const getUserData = async () => {
+    ;
     const request = new Request("/api/users/user/", {
         method: "GET",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem('token')}`
+            "Authorization": `Bearer ${authStore.token}`
         }
     })
     try {
@@ -43,7 +46,7 @@ const editProfile = async () => {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem('token')}`
+            "Authorization": `Bearer ${authStore.token}`
         },
         body: JSON.stringify(userData.data)
     })
@@ -73,7 +76,7 @@ const changePassword = async () => {
         method: "PATCH",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem('token')}`
+            "Authorization": `Bearer ${authStore.token}`
         },
         body: JSON.stringify(changePasswdForm)
     })
@@ -105,7 +108,7 @@ const deleteAccount = async () => {
         method: "DELETE",
         headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem('token')}`
+            "Authorization": `Bearer ${authStore.token}`
         },
         body: JSON.stringify(deleteAccountForm)
     })
@@ -115,7 +118,7 @@ const deleteAccount = async () => {
             const data = await response.json();
             if (response.ok) {
                 toast.success("Account deleted successfully");
-                localStorage.removeItem('token');
+                authStore.logout();
                 router.push("/login");
             }
             else {

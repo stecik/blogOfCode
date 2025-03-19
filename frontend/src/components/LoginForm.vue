@@ -26,10 +26,7 @@ const handleLogin = async () => {
         const data = await response.json();
         if (response.ok) {
             toast.success('Login successful');
-            console.log(data);
-            authStore.login(loginForm.username);
-            localStorage.setItem('token', data.access);
-            localStorage.setItem('user', data.user.username);
+            authStore.login(loginForm.username, data.access);
             router.push('/');
         } else {
             toast.error(data.detail);

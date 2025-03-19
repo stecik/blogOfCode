@@ -18,9 +18,7 @@ const isActiveLink = (routePath) => {
 }
 
 const handleLogout = () => {
-    authStore.logout();
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
+    authStore.logout(); ě
     router.push('/login');
 }
 
