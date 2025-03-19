@@ -1,33 +1,30 @@
 <script setup>
 import logo from "@/assets/icons/logo.png"
 import { RouterLink, useRouter, useRoute } from "vue-router";
-import { computed } from "vue";
+import { computed, ref, reactive } from "vue";
 import { APP_NAME } from "@/constants";
+import { useAuthStore } from "@/stores/auth";
 
 const router = useRouter();
 const route = useRoute();
+const authStore = useAuthStore();
+
+const addArticeRoute = computed(() => {
+    return authStore.isAuthenticated ? '/articles/add' : '/login';
+})
 
 const isActiveLink = (routePath) => {
     return route.path === routePath;
 }
 
-const logout = () => {
+const handleLogout = () => {
+    authStore.logout();
     localStorage.removeItem('token');
     localStorage.removeItem('user');
     router.push('/login');
 }
 
-const isLoggedIn = () => {
-    return localStorage.getItem('token') !== null;
-}
-
-const username = computed(() => {
-    return localStorage.getItem('user');
-})
-
-
 </script>
-
 
 <template>
     <nav class="bg-amber-600 border-b border-amber-500">
@@ -43,19 +40,24 @@ const username = computed(() => {
                             <RouterLink to="/" :class="{ 'bg-amber-900': isActiveLink('/') }"
                                 class="text-white hover:bg-amber-950 hover:text-white rounded-md px-3 py-2">
                                 news</RouterLink>
-                            <RouterLink to="/articles/add" :class="{ 'bg-amber-900': isActiveLink('/articles/add') }"
+                            <RouterLink :to="addArticeRoute" :class="{ 'bg-amber-900': isActiveLink('/articles/add') }"
                                 class="text-white hover:bg-amber-950 hover:text-white rounded-md px-3 py-2">addArticle
+                            </RouterLink>
+                            <RouterLink v-if="authStore.isAuthenticated" to="/articles/my"
+                                :class="{ 'bg-amber-900': isActiveLink('/articles/my') }"
+                                class="text-white hover:bg-amber-950 hover:text-white rounded-md px-3 py-2">
+                                myArticles
                             </RouterLink>
                         </div>
                     </div>
-                    <div v-if="isLoggedIn()" class="md:ml-auto">
+                    <div v-if="authStore.isAuthenticated" class="md:ml-auto">
                         <div class="flex space-x-2">
                             <RouterLink :to="'/profile/'" :class="{ 'bg-amber-900': isActiveLink('/profile/') }"
                                 class="text-white hover:bg-amber-950 hover:text-white rounded-md px-3 py-2">
-                                {{ username }}
+                                {{ authStore.user }}
                             </RouterLink>
 
-                            <button @click="logout()"
+                            <button @click="handleLogout()"
                                 class="text-white hover:bg-amber-950 hover:text-white rounded-md px-3 py-2">
                                 logout
                             </button>

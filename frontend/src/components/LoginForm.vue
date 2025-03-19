@@ -2,16 +2,18 @@
 import { ref, reactive } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/auth';
 
 const toast = useToast();
 const router = useRouter();
+const authStore = useAuthStore();
 
 const loginForm = reactive({
     username: '',
     password: '',
 });
 
-const login = async () => {
+const handleLogin = async () => {
     try {
         const request = new Request("/api/users/login/", {
             method: "POST",
@@ -25,6 +27,7 @@ const login = async () => {
         if (response.ok) {
             toast.success('Login successful');
             console.log(data);
+            authStore.login(loginForm.username);
             localStorage.setItem('token', data.access);
             localStorage.setItem('user', data.user.username);
             router.push('/');
@@ -46,7 +49,7 @@ const login = async () => {
         <div class="container m-auto max-w-2xl py-24">
             <div class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
                 <h2 class=" text-3xl text-center font-semibold mb-6 text-amber-600">login</h2>
-                <form @submit.prevent="login">
+                <form @submit.prevent="handleLogin">
 
                     <div class="mb-4">
                         <label class="block text-gray-700 font-bold mb-2">username</label>

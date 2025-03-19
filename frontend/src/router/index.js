@@ -5,6 +5,7 @@ import RegisterView from '@/views/RegisterView.vue'
 import AddArticleView from '@/views/AddArticleView.vue'
 import ArticleDetailView from '@/views/ArticleDetailView.vue'
 import UserProfileView from '@/views/UserProfileView.vue'
+import MyArticlesView from '@/views/MyArticlesView.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -33,6 +34,11 @@ const router = createRouter({
             path: '/profile',
             name: 'profile',
             component: UserProfileView,
+        },
+        {
+            path: '/articles/my',
+            name: 'my-articles',
+            component: MyArticlesView,
         },
     ],
 })
