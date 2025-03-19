@@ -7,7 +7,7 @@ from .models import Article, Category
 
 class ArticlesListCreate(generics.ListCreateAPIView):
 
-    queryset = Article.objects.all()
+    queryset = Article.objects.all().order_by("-created_at")
     serializer_class = ArticleSerializer
 
     def get_permissions(self):

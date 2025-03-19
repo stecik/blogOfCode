@@ -1,11 +1,31 @@
 <script setup>
 import logo from "@/assets/icons/logo.png"
-import { RouterLink, useRoute } from "vue-router";
+import { RouterLink, useRouter, useRoute } from "vue-router";
+import { computed } from "vue";
 import { APP_NAME } from "@/constants";
 
+const router = useRouter();
+const route = useRoute();
+
 const isActiveLink = (routePath) => {
-    return useRoute().path === routePath;
+    return route.path === routePath;
 }
+
+const logout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    router.push('/login');
+}
+
+const isLoggedIn = () => {
+    return localStorage.getItem('token') !== null;
+}
+
+const username = computed(() => {
+    return localStorage.getItem('user');
+})
+
+
 </script>
 
 
@@ -28,7 +48,20 @@ const isActiveLink = (routePath) => {
                             </RouterLink>
                         </div>
                     </div>
-                    <div class="md:ml-auto">
+                    <div v-if="isLoggedIn()" class="md:ml-auto">
+                        <div class="flex space-x-2">
+                            <RouterLink :to="'/profile/'" :class="{ 'bg-amber-900': isActiveLink('/profile/') }"
+                                class="text-white hover:bg-amber-950 hover:text-white rounded-md px-3 py-2">
+                                {{ username }}
+                            </RouterLink>
+
+                            <button @click="logout()"
+                                class="text-white hover:bg-amber-950 hover:text-white rounded-md px-3 py-2">
+                                logout
+                            </button>
+                        </div>
+                    </div>
+                    <div v-else class=" md:ml-auto">
                         <div class="flex space-x-2">
                             <RouterLink to="/login" :class="{ 'bg-amber-900': isActiveLink('/login') }"
                                 class="text-white hover:bg-amber-950 hover:text-white rounded-md px-3 py-2">

@@ -18,7 +18,9 @@ class UserSerializer(serializers.ModelSerializer):
             "last_name",
             "is_active",
             "is_staff",
+            "is_superuser",
         ]
+        read_only_fields = ["id", "is_active", "is_staff", "is_superuser"]
 
     def update(self, instance, validated_data):
         allowed_fields = {"username", "email", "first_name", "last_name"}
