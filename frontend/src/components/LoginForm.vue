@@ -45,7 +45,7 @@ const login = async () => {
     <section>
         <div class="container m-auto max-w-2xl py-24">
             <div class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
-                <h2 class=" text-3xl text-center font-semibold mb-6">login</h2>
+                <h2 class=" text-3xl text-center font-semibold mb-6 text-amber-600">login</h2>
                 <form @submit.prevent="login">
 
                     <div class="mb-4">

@@ -1,6 +1,7 @@
 <script setup>
 import { reactive, ref } from 'vue';
 import { useToast } from 'vue-toastification';
+import { validatePassword } from '@/utils/passwdValidation';
 
 const toast = useToast();
 
@@ -15,7 +16,7 @@ const registerForm = reactive({
 const passwordAgain = ref('');
 
 const registerUser = async () => {
-    if (!validatePassword()) {
+    if (!validatePassword(registerForm.password, passwordAgain.value, toast)) {
         return;
     }
     try {
@@ -40,12 +41,6 @@ const registerUser = async () => {
 
 }
 
-const validatePassword = () => {
-    if (registerForm.password !== passwordAgain.value) {
-        toast.error('Passwords do not match');
-    }
-}
-
 </script>
 
 
@@ -54,7 +49,7 @@ const validatePassword = () => {
     <section class="bg-green-50">
         <div class="container m-auto max-w-2xl py-24">
             <div class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
-                <h2 class=" text-3xl text-center font-semibold mb-6">createNewAccount</h2>
+                <h2 class=" text-3xl text-center font-semibold mb-6 text-amber-600">createNewAccount</h2>
                 <form @submit.prevent="registerUser">
 
                     <div class="mb-4">
