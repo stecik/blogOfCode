@@ -9,6 +9,7 @@ from .serializers import (
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
 from django.contrib.auth import get_user_model
+from django.utils.timezone import now
 
 CustomUser = get_user_model()
 
@@ -62,3 +63,27 @@ class ChangePasswordView(generics.UpdateAPIView):
 
 class CustomTokenObtainPairView(TokenObtainPairView):
     serializer_class = CustomTokenObtainPairSerializer
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        username = request.data.get("username")
+        if username:
+            user = CustomUser.objects.get(username=username)
+            user.is_online = True
+            user.last_login = now()
+            user.save()
+            return response
+        return response
+
+
+class LogoutView(generics.GenericAPIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        try:
+            user = request.user
+            user.is_online = False
+            user.save()
+            return Response({"detail": "User logged out successfully"}, status=200)
+        except Exception:
+            return Response({"error": "An error occurred during logout"}, status=400)

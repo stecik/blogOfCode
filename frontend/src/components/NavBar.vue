@@ -4,9 +4,11 @@ import { RouterLink, useRouter, useRoute } from "vue-router";
 import { computed, ref, reactive } from "vue";
 import { APP_NAME } from "@/constants";
 import { useAuthStore } from "@/stores/auth";
+import { useToast } from "vue-toastification";
 
 const router = useRouter();
 const route = useRoute();
+const toast = useToast();
 const authStore = useAuthStore();
 
 const addArticeRoute = computed(() => {
@@ -17,9 +19,28 @@ const isActiveLink = (routePath) => {
     return route.path === routePath;
 }
 
-const handleLogout = () => {
-    authStore.logout(); ě
-    router.push('/login');
+const handleLogout = async () => {
+    const request = new Request("/api/users/logout/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${authStore.token}`
+        }
+    })
+    try {
+        const response = await fetch(request);
+        const data = await response.json();
+        if (response.ok) {
+            authStore.logout();
+            toast.success(data.detail);
+            router.push('/login');
+        } else {
+            toast.error(data.error);
+            throw new Error("Error logging out");
+        }
+    } catch (error) {
+        console.log(error);
+    }
 }
 
 </script>

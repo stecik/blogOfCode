@@ -186,7 +186,7 @@ onMounted(() => {
 
                     <div class="mb-4">
                         <label class="block text-gray-500 font-bold mb-2">isOnline</label>
-                        <input v-model="userData.data.is_active" type="" id="isOnline" name="isOnline" disabled
+                        <input v-model="userData.data.is_online" type="" id="isOnline" name="isOnline" disabled
                             class="border rounded w-full py-2 px-3 mb-2 text-gray-500" required />
                     </div>
 
