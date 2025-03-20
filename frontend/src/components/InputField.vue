@@ -2,7 +2,10 @@
 import { defineProps, defineEmits, computed } from 'vue';
 
 const props = defineProps({
-    modelValue: [String, Number, Boolean],
+    modelValue: {
+        type: [String, Number, Boolean],
+        default: null
+    },
     lbl: {
         type: String,
         default: '',

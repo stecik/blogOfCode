@@ -54,7 +54,7 @@ onMounted(() => {
         </div>
         <hr class="border border-gray-100 my-6">
         <div class="mt-4 text-gray-700">
-            <p>{{ article.data.content }}</p>
+            <div v-html="article.data.content"></div>
         </div>
 
         <div class="mt-6">

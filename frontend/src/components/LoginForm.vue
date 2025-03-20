@@ -28,7 +28,7 @@ const handleLogin = async () => {
         const data = await response.json();
         if (response.ok) {
             toast.success('Login successful');
-            authStore.login(loginForm.username, data.access);
+            authStore.login(loginForm.username, data.user.id, data.access);
             router.push('/');
         } else {
             toast.error(data.detail);

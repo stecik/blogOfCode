@@ -43,7 +43,7 @@ const truncContent = (content) => {
             </div>
 
             <div class="mb-5">
-                <div>{{ truncContent(article.content) }} </div>
+                <div v-html="truncContent(article.content)"></div>
             </div>
 
             <div class="border border-gray-100 mb-5"></div>
