@@ -2,6 +2,9 @@
 import { useRoute } from 'vue-router';
 import { ref, reactive, onMounted, computed } from 'vue';
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
+import { formatDate } from '@/utils/formatDate';
+import TagsList from '@/components/TagsList.vue';
+import ButtonPrimary from '@/components/ButtonPrimary.vue';
 
 const route = useRoute();
 const articleId = ref(route.params.id);
@@ -25,11 +28,9 @@ const getArticle = async () => {
     }
 }
 
-const formatDate = (datetime) => {
-    const date = new Date(datetime);
-    return date.toLocaleString();
-}
-
+const authorLabel = computed(() => {
+    return article.data.authors_display.length > 1 ? "Authors" : "Author";
+});
 
 onMounted(() => {
     getArticle();
@@ -40,31 +41,24 @@ onMounted(() => {
     <div v-if="article.isLoading" class="flex justify-center items-center h-screen">
         <PulseLoader color="#d97706" />
     </div>
-    <div v-else class="max-w-3xl mx-auto my-10 p-6 bg-white shadow-lg rounded-lg">
+    <div v-else class="max-w-7xl mx-auto my-10 p-6 bg-white shadow-lg rounded-lg">
         <h1 class="text-3xl font-bold text-orange-600 mb-4">{{ article.data.title }}</h1>
 
         <div class="text-gray-600 text-sm">
-            <p><strong>Authors:</strong> {{ article.data.authors_display.join(', ') }}</p>
-            <p><strong>Created:</strong> {{ formatDate(article.data.created_at) }}</p>
-            <p><strong>Last Updated:</strong> {{ formatDate(article.data.updated_at) }}</p>
+            <p class="my-2"><strong>{{ authorLabel }}:</strong> {{ article.data.authors_display.join(', ') }}</p>
+            <p class="my-2"><strong>Created:</strong> {{ formatDate(article.data.created_at) }}</p>
+            <p class="my-2"><strong>Last Updated:</strong> {{ formatDate(article.data.updated_at) }}</p>
         </div>
-
         <div class="mt-4 flex flex-wrap">
-            <span v-for="tag in article.data.tags_display" :key="tag"
-                class="bg-orange-300 text-orange-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded">
-                #{{ tag }}
-            </span>
+            <TagsList :tags="article.data.tags_display" />
         </div>
-
+        <hr class="border border-gray-100 my-6">
         <div class="mt-4 text-gray-700">
             <p>{{ article.data.content }}</p>
         </div>
 
         <div class="mt-6">
-            <button @click="$router.push('/')"
-                class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-4 rounded">
-                Back to News
-            </button>
+            <ButtonPrimary link="/" />
         </div>
     </div>
 </template>

@@ -3,6 +3,8 @@ import { ref, reactive } from 'vue';
 import { useToast } from 'vue-toastification';
 import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
+import ButtonSubmit from './ButtonSubmit.vue';
+import InputField from './InputField.vue';
 
 const toast = useToast();
 const router = useRouter();
@@ -48,22 +50,9 @@ const handleLogin = async () => {
                 <h2 class=" text-3xl text-center font-semibold mb-6 text-amber-600">login</h2>
                 <form @submit.prevent="handleLogin">
 
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-bold mb-2">username</label>
-                        <input v-model="loginForm.username" type="text" id="username" name="username"
-                            class="border rounded w-full py-2 px-3 mb-2" placeholder="johndoe124" required />
-                    </div>
-
-                    <div class="mb-4">
-                        <label class="block text-gray-700 font-bold mb-2">password</label>
-                        <input v-model="loginForm.password" type="password" id="password" name="password"
-                            class="border rounded w-full py-2 px-3 mb-2" placeholder="password" required />
-                    </div>
-
-                    <button type="submit" class=" bg-amber-600 hover:bg-amber-950 hover:cursor-pointer text-white font-bold py-2 px-4 rounded-full w-full
-                            focus:outline-none focus:shadow-outline">
-                        login
-                    </button>
+                    <InputField lbl="username" plchldr="username" v-model="loginForm.username" />
+                    <InputField lbl="password" plchldr="password" type="password" v-model="loginForm.password" />
+                    <ButtonSubmit title="login" />
 
                 </form>
             </div>

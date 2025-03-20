@@ -53,7 +53,7 @@ onMounted(async () => {
 
     <section class="px-4 py-10">
         <div class="container-xl lg:container m-auto">
-            <h2 class="text-3xl font-bold text-amber-500 mb-6 text-center">
+            <h2 class="text-3xl font-bold text-orange-600 mb-6 text-center">
                 News
             </h2>
             <div v-if="articles.isLoading" class="text-center text-gray-500 py-6">
@@ -63,11 +63,12 @@ onMounted(async () => {
                 <!-- <ArticleCard v-for="article in articles.data" :key="article.id" :article="article" /> -->
                 <ArticleCard v-for="article in loadedArticles" :key="article.id" :article="article" />
             </div>
-            <button @click="loadMore()"
-                class="bg-amber-600 hover:bg-amber-950 hover:cursor-pointer  text-white px-4 py-2 mt-4 rounded-md">
-                loadMore
-            </button>
-
+            <div class="flex justify-center my-3">
+                <button @click="loadMore()"
+                    class="bg-orange-500 hover:bg-orange-600 hover:cursor-pointer  text-white px-4 py-2 mt-4 rounded-md">
+                    loadMore
+                </button>
+            </div>
         </div>
     </section>
 

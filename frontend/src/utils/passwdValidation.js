@@ -7,7 +7,7 @@ export const validatePassword = (password, passwordAgain, toast = undefined) => 
     }
     if (password.length < 8) {
         if (toast) {
-            toast.error('Password must be at least 8 characters long')
+            toast.error(`Password must be at least 8 characters long.`)
         }
         return false
     }
