@@ -4,8 +4,11 @@ import { useToast } from 'vue-toastification';
 import { validatePassword } from '@/utils/passwdValidation';
 import ButtonSubmit from './ButtonSubmit.vue';
 import InputField from './InputField.vue';
+import { customFetch } from '@/api';
+import { useRouter } from 'vue-router';
 
 const toast = useToast();
+const router = useRouter();
 
 const registerForm = reactive({
     first_name: '',
@@ -23,19 +26,13 @@ const registerUser = async () => {
         return;
     }
     try {
-        const request = new Request("/api/users/register/", {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(registerForm),
-        });
-        const response = await fetch(request);
+        const response = await customFetch("/api/users/register/", "POST", registerForm);
         if (!response.ok) {
             throw new Error('An error occurred');
         }
         else {
             toast.success('User registered successfully. Please login');
+            router.push('/login');
         }
     } catch (error) {
         console.error(error);
@@ -59,8 +56,8 @@ const registerUser = async () => {
                     <InputField v-model="registerForm.last_name" lbl="lastName" plchldr="Doe" />
                     <InputField v-model="registerForm.username" lbl="username" plchldr="johnsmith23" />
                     <InputField v-model="registerForm.email" lbl="email" plchldr="john.doe@example.com" type="email" />
-                    <InputField v-model="registerForm.password" lbl="password" plchldr="password" type="text" />
-                    <InputField v-model="passwordAgain" lbl="passwordAgain" plchldr="passwordAgain" type="text" />
+                    <InputField v-model="registerForm.password" lbl="password" plchldr="password" type="password" />
+                    <InputField v-model="passwordAgain" lbl="passwordAgain" plchldr="passwordAgain" type="password" />
                     <ButtonSubmit title="register" />
                 </form>
 

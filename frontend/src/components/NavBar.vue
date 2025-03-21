@@ -5,6 +5,7 @@ import { computed, ref, reactive } from "vue";
 import { APP_NAME } from "@/constants";
 import { useAuthStore } from "@/stores/auth";
 import { useToast } from "vue-toastification";
+import { customFetch } from "@/api";
 
 const router = useRouter();
 const route = useRoute();
@@ -28,7 +29,7 @@ const handleLogout = async () => {
         }
     })
     try {
-        const response = await fetch(request);
+        const response = await customFetch("/api/users/logout/", "POST");
         const data = await response.json();
         if (response.ok) {
             authStore.logout();

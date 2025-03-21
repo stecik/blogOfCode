@@ -5,6 +5,7 @@ import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 import { formatDate } from '@/utils/formatDate';
 import TagsList from '@/components/TagsList.vue';
 import ButtonPrimary from '@/components/ButtonPrimary.vue';
+import { customFetch } from '@/api';
 
 const route = useRoute();
 const articleId = ref(route.params.id);
@@ -17,7 +18,7 @@ const getArticle = async () => {
     article.isLoading = true;
     try {
         article.isLoading = true;
-        const response = await fetch(`/api/blog/articles/${articleId.value}/`);
+        const response = await customFetch(`/api/blog/articles/${articleId.value}/`);
         const data = await response.json();
         article.data = data;
     } catch (error) {

@@ -6,6 +6,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import ButtonSubmit from '@/components/ButtonSubmit.vue';
 import InputField from '@/components/InputField.vue';
+import { customFetch } from '@/api';
 
 const router = useRouter();
 const toast = useToast();
@@ -24,16 +25,9 @@ const changePasswdForm = reactive({
 const newPasswordAgain = ref("");
 
 const getUserData = async () => {
-    ;
-    const request = new Request("/api/users/user/", {
-        method: "GET",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${authStore.token}`
-        }
-    })
+    userData.loading = true;
     try {
-        const response = await fetch(request);
+        const response = await customFetch("/api/users/user/", "GET");
         const data = await response.json();
         if (response.ok) {
             userData.data = data;
@@ -41,19 +35,14 @@ const getUserData = async () => {
     } catch (error) {
         console.log(error);
     }
+    finally {
+        userData.loading = false;
+    }
 }
 
 const editProfile = async () => {
-    const request = new Request("/api/users/user/", {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${authStore.token}`
-        },
-        body: JSON.stringify(userData.data)
-    })
     try {
-        const response = await fetch(request);
+        const response = await customFetch("/api/users/user/", "PATCH", userData.data);
         if (response.ok) {
             toast.success("Profile updated successfully");
         }
@@ -63,10 +52,10 @@ const editProfile = async () => {
     } catch (error) {
         console.log(error);
         toast.error("An error occurred");
-    }
-    finally {
+    } finally {
         getUserData();
     }
+
 }
 
 
@@ -74,16 +63,8 @@ const changePassword = async () => {
     if (!validatePassword(changePasswdForm.new_password, newPasswordAgain.value, toast)) {
         return;
     }
-    const request = new Request("/api/users/user/change-password/", {
-        method: "PATCH",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${authStore.token}`
-        },
-        body: JSON.stringify(changePasswdForm)
-    })
     try {
-        const response = await fetch(request);
+        const response = await customFetch("/api/users/user/change-password/", "PATCH", changePasswdForm);
         const data = await response.json();
         if (response.ok) {
             toast.success("Password changed successfully");
@@ -105,25 +86,18 @@ const changePassword = async () => {
 const deleteAccountForm = reactive({
     password: ""
 })
+
 const deleteAccount = async () => {
-    const request = new Request("/api/users/user/", {
-        method: "DELETE",
-        headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${authStore.token}`
-        },
-        body: JSON.stringify(deleteAccountForm)
-    })
     if (confirm("Are you sure you want to delete your account?")) {
         try {
-            const response = await fetch(request);
-            const data = await response.json();
+            const response = await customFetch("/api/users/user/", "DELETE", deleteAccountForm);
             if (response.ok) {
                 toast.success("Account deleted successfully");
                 authStore.logout();
                 router.push("/login");
             }
             else {
+                const data = await response.json();
                 toast.error(data.error);
             }
         } catch (error) {
@@ -144,7 +118,7 @@ onMounted(() => {
 
 <template>
 
-    <section class="bg-green-50">
+    <section>
         <div class="container m-auto max-w-2xl py-4 pt-15">
             <div class="bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0">
                 <h2 class=" text-3xl text-center font-semibold mb-6 text-amber-600">profileInfo</h2>
@@ -190,6 +164,7 @@ onMounted(() => {
 
             </div>
         </div>
+
 
     </section>
 

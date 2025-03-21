@@ -2,6 +2,7 @@
 import { ref, onMounted, reactive } from 'vue';
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 import ArticleCard from "@/components/ArticleCard.vue";
+import { customFetch } from '@/api';
 
 const articles = reactive({
     data: [],
@@ -13,7 +14,7 @@ const loadedArticles = ref([]);
 const getArticles = async () => {
     try {
         articles.isLoading = true;
-        const response = await fetch("/api/blog/articles/");
+        const response = await customFetch("/api/blog/articles/", "GET");
         const data = await response.json();
         articles.data = data;
         articles.isLoading = false;
@@ -33,11 +34,9 @@ const loadMore = (increment = 3) => {
     const data = articles.data.slice(start.value, end.value);
     start.value = end.value;
     end.value += increment;
-    console.log(data);
     if (data.length > 0) {
         loadedArticles.value = [...loadedArticles.value, ...data];
     }
-    console.log(loadedArticles.value);
 }
 
 
@@ -60,7 +59,6 @@ onMounted(async () => {
                 <PulseLoader color="#d97706" />
             </div>
             <div v-else class="grid grid-cols-1 md:grid-cols-1 gap-6">
-                <!-- <ArticleCard v-for="article in articles.data" :key="article.id" :article="article" /> -->
                 <ArticleCard v-for="article in loadedArticles" :key="article.id" :article="article" />
             </div>
             <div class="flex justify-center my-3">

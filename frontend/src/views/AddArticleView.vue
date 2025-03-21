@@ -7,6 +7,7 @@ import InputField from '@/components/InputField.vue';
 import SelectField from '@/components/SelectField.vue';
 import Editor from 'primevue/editor';
 import { useToast } from 'vue-toastification';
+import { customFetch } from '@/api';
 
 const authStore = useAuthStore();
 const toast = useToast();
@@ -34,7 +35,7 @@ const addTag = () => {
 };
 
 const getCategories = async () => {
-    const respose = await fetch('/api/blog/categories/');
+    const respose = await customFetch('/api/blog/categories/', 'GET');
     const data = await respose.json();
     categoriesMap.value = Object.fromEntries(
         data.map((category) => [category.name, category.id])
@@ -46,17 +47,8 @@ const addArticle = async () => {
     for (const category of selectedCategories.value) {
         articleForm.categories.push(categoriesMap.value[category]);
     }
-    const request = new Request('/api/blog/articles/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${authStore.token}`,
-        },
-        body: JSON.stringify(articleForm),
-    });
-    console.log(articleForm.authors);
     try {
-        const response = await fetch(request);
+        const response = await customFetch('/api/blog/articles/', 'POST', articleForm);
         if (response.ok) {
             toast.success('Article created successfully');
             articleForm.title = '';

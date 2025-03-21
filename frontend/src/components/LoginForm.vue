@@ -5,6 +5,7 @@ import { useRouter } from 'vue-router';
 import { useAuthStore } from '@/stores/auth';
 import ButtonSubmit from './ButtonSubmit.vue';
 import InputField from './InputField.vue';
+import { customFetch } from '@/api';
 
 const toast = useToast();
 const router = useRouter();
@@ -17,18 +18,11 @@ const loginForm = reactive({
 
 const handleLogin = async () => {
     try {
-        const request = new Request("/api/users/login/", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(loginForm),
-        })
-        const response = await fetch(request);
+        const response = await customFetch("/api/users/login/", "POST", loginForm);
         const data = await response.json();
         if (response.ok) {
             toast.success('Login successful');
-            authStore.login(loginForm.username, data.user.id, data.access);
+            authStore.login(loginForm.username, data.user.id, data.access, data.refresh);
             router.push('/');
         } else {
             toast.error(data.detail);
