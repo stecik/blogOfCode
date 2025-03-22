@@ -29,6 +29,7 @@ export const customFetch = async (url, method = 'GET', body = null, headers = {}
             await authStore.refreshLogin()
             return await fetch(createRequest(url, method, body, headers))
         }
+        return response
     } catch (error) {
         console.log(error)
     }

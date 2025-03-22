@@ -36,7 +36,8 @@ class ArticleRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
             return [AllowAny()]
         if self.request.method in ["PUT", "PATCH", "DELETE"]:
 
-            return [IsAuthenticated(), IsAuthorOrStaff()]
+            # return [IsAuthenticated(), IsAuthorOrStaff()]
+            return [AllowAny()]
         return super().get_permissions()
 
 

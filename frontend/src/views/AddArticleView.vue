@@ -21,9 +21,6 @@ const articleForm = reactive({
 });
 
 const categories = ref([]);
-const categoriesMap = ref({});
-const selectedCategories = ref([]);
-
 const tagField = ref('');
 
 const addTag = () => {
@@ -36,17 +33,10 @@ const addTag = () => {
 
 const getCategories = async () => {
     const response = await customFetch('/api/blog/categories/', 'GET');
-    const data = await response.json();
-    categoriesMap.value = Object.fromEntries(
-        data.map((category) => [category.name, category.id])
-    );
-    categories.value = Object.keys(categoriesMap.value);
+    categories.value = await response.json();
 };
 
 const addArticle = async () => {
-    for (const category of selectedCategories.value) {
-        articleForm.categories.push(categoriesMap.value[category]);
-    }
     try {
         const response = await customFetch('/api/blog/articles/', 'POST', articleForm);
         if (response.ok) {
@@ -84,16 +74,23 @@ onMounted(() => {
                         <TagsList :tags="articleForm.tags" />
                     </div>
                     <InputField v-model="tagField" lbl="tagName" plchldr="tagName" :required="false" />
-                    <ButtonSubmit title="addTag" />
+                    <span class="mr-2">
+                        <ButtonSubmit title="addTag" />
+                    </span>
+                    <ButtonSubmit @click="clearAllTags" title="clearAllTags" color="bg-red-700"
+                        hoverColor="bg-red-800" />
                 </form>
-                <ButtonSubmit @click="clearAllTags" title="clearAllTags" color="bg-red-700" hoverColor="bg-red-800" />
+
                 <form class="mb-4" @submit.prevent="addArticle">
-                    <SelectField v-model="selectedCategories" lbl="category" :options="categories" :multiple="true" />
+                    <SelectField v-model="articleForm.categories" lbl="category" :options="categories"
+                        :multiple="true" />
                     <InputField v-model="articleForm.title" lbl="title" plchldr="noClickBait" />
                     <div class="card">
                         <Editor v-model="articleForm.content" editorStyle="height: 320px" />
                     </div>
-                    <ButtonSubmit title="createArticle" />
+                    <div class="mt-5">
+                        <ButtonSubmit title="createArticle" />
+                    </div>
                 </form>
             </div>
         </div>

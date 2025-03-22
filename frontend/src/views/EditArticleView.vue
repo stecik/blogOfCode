@@ -8,11 +8,13 @@ import SelectField from '@/components/SelectField.vue';
 import Editor from 'primevue/editor';
 import { useToast } from 'vue-toastification';
 import { customFetch } from '@/api';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 
 const toast = useToast();
 const route = useRoute();
+const router = useRouter();
+const authStore = useAuthStore();
 
 const articleForm = reactive({
     data: {
@@ -27,27 +29,19 @@ const articleForm = reactive({
 });
 
 const categories = ref([]);
-// TODO: bind to articleForm.data - need to be mapped to ids
-const categoriesMap = ref({});
-const selectedCategories = ref();
-
 const tagField = ref('');
 
 const addTag = () => {
     if (tagField.value === '') {
         return
     };
-    articleForm.tags.push(tagField.value);
+    articleForm.data.tags.push(tagField.value);
     tagField.value = '';
 };
 
 const getCategories = async () => {
     const response = await customFetch('/api/blog/categories/', 'GET');
-    const data = await response.json();
-    categoriesMap.value = Object.fromEntries(
-        data.map((category) => [category.name, category.id])
-    );
-    categories.value = Object.keys(categoriesMap.value);
+    categories.value = await response.json();
 };
 
 const getArticle = async () => {
@@ -56,37 +50,33 @@ const getArticle = async () => {
         const data = await respose.json();
         articleForm.data.title = data.title;
         articleForm.data.content = data.content;
-        articleForm.data.categories = data.categories;
-        articleForm.data.tags = data.tags;
-        articleForm.data.authors = data.authors;
+        articleForm.data.categories = data.categories_display;
+        articleForm.data.tags = data.tags_display;
+        articleForm.data.authors = [authStore.userId];
+
     } catch (error) {
         console.error(error);
     }
-
 };
 
-const addArticle = async () => {
-    // for (const category of selectedCategories.value) {
-    //     articleForm.categories.push(categoriesMap.value[category]);
-    // }
-    // try {
-    //     const response = await customFetch('/api/blog/articles/', 'POST', articleForm);
-    //     if (response.ok) {
-    //         toast.success('Article created successfully');
-    //         articleForm.title = '';
-    //         articleForm.content = '';
-    //         articleForm.categories = [];
-    //         articleForm.tags = [];
-    //     } else {
-    //         toast.error('Article creation failed');
-    //     }
-    // } catch (error) {
-    //     console.error(error);
-    // }
+const updateArticle = async () => {
+    console.log(articleForm.data);
+    try {
+        const response = await customFetch(`/api/blog/articles/${route.params.id}/`, 'PATCH', articleForm.data);
+        console.log(response.status);
+        if (response.ok) {
+            toast.success('Article updated successfully');
+            router.push('/articles/my');
+        } else {
+            toast.error('Article update failed');
+        }
+    } catch (error) {
+        console.error(error);
+    }
 };
 
 const clearAllTags = () => {
-    articleForm.tags = [];
+    articleForm.data.tags = [];
 };
 
 onMounted(() => {
@@ -108,16 +98,23 @@ onMounted(() => {
                         <TagsList :tags="articleForm.data.tags" />
                     </div>
                     <InputField v-model="tagField" lbl="tagName" plchldr="tagName" :required="false" />
-                    <ButtonSubmit title="addTag" />
+                    <span class="mr-2">
+                        <ButtonSubmit title="addTag" />
+                    </span>
+                    <ButtonSubmit @click="clearAllTags" title="clearAllTags" color="bg-red-700"
+                        hoverColor="bg-red-800" />
                 </form>
-                <ButtonSubmit @click="clearAllTags" title="clearAllTags" color="bg-red-700" hoverColor="bg-red-800" />
-                <form class="mb-4" @submit.prevent="addArticle">
-                    <SelectField v-model="selectedCategories" lbl="category" :options="categories" :multiple="true" />
+
+                <form class="mb-4" @submit.prevent="updateArticle">
+                    <SelectField v-model="articleForm.data.categories" lbl="category" :options="categories"
+                        :multiple="true" />
                     <InputField v-model="articleForm.data.title" lbl="title" plchldr="noClickBait" />
                     <div class="card">
                         <Editor v-model="articleForm.data.content" editorStyle="height: 320px" />
                     </div>
-                    <ButtonSubmit title="createArticle" />
+                    <div class="mt-5">
+                        <ButtonSubmit title="updateArticle" />
+                    </div>
                 </form>
             </div>
         </div>

@@ -18,9 +18,8 @@ class ArticleSerializer(serializers.ModelSerializer):
     tags_display = serializers.SerializerMethodField()
     authors = serializers.ListField(child=serializers.IntegerField(), write_only=True)
     authors_display = serializers.SerializerMethodField()
-    categories = serializers.ListField(
-        child=serializers.IntegerField(), write_only=True
-    )
+    categories = serializers.ListField(child=serializers.CharField(), write_only=True)
+
     categories_display = serializers.SerializerMethodField()
 
     class Meta:
@@ -46,13 +45,30 @@ class ArticleSerializer(serializers.ModelSerializer):
 
         article = Article.objects.create(**validated_data)
         article.authors.set(CustomUser.objects.filter(id__in=authors))
-        article.categories.set(Category.objects.filter(id__in=categories))
+        article.categories.set(Category.objects.filter(name__in=categories))
 
         for tag in tags:
             tag_obj, _ = Tag.objects.get_or_create(name=tag)
             article.tags.add(tag_obj)
 
         return article
+
+    def update(self, instance, validated_data):
+        tags = validated_data.pop("tags", [])
+        authors = validated_data.pop("authors", [])
+        categories = validated_data.pop("categories", [])
+        instance.title = validated_data.get("title", instance.title)
+        instance.content = validated_data.get("content", instance.content)
+        instance.save()
+        instance.authors.set(CustomUser.objects.filter(id__in=authors))
+        instance.categories.set(Category.objects.filter(name__in=categories))
+
+        instance.tags.clear()
+        for tag in tags:
+            tag_obj, _ = Tag.objects.get_or_create(name=tag)
+            instance.tags.add(tag_obj)
+
+        return instance
 
     def get_tags_display(self, obj):
         return [tag.name for tag in obj.tags.all()]
@@ -65,6 +81,10 @@ class ArticleSerializer(serializers.ModelSerializer):
 
 
 class CategorySerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Category
-        fields = ["id", "name"]
+        fields = ["name"]
+
+    def to_representation(self, instance):
+        return instance.name
