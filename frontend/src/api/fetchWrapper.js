@@ -9,7 +9,6 @@ export const customFetch = async (url, method = 'GET', body = null, headers = {}
             ...customHeaders,
         })
         const token = authStore.token
-        console.log(token)
         if (token) {
             headers.set('Authorization', `Bearer ${token}`)
         }

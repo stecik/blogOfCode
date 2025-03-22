@@ -1,10 +1,33 @@
 <script setup>
-import { defineProps, ref, computed } from 'vue';
+import { defineProps, ref, computed, defineEmits } from 'vue';
 import { formatDate } from '@/utils/formatDate';
 import TagsList from './TagsList.vue';
+import ButtonPrimary from './ButtonPrimary.vue';
+import ButtonSubmit from './ButtonSubmit.vue';
+import { useToast } from 'vue-toastification';
+import { customFetch } from '@/api';
+import { useRouter } from 'vue-router';
+
+const toast = useToast();
+const router = useRouter();
 
 const props = defineProps({
-    article: Object,
+    article: {
+        type: Object,
+        default: () => ({})
+    },
+    editBtn: {
+        type: Boolean,
+        default: false
+    },
+    delBtn: {
+        type: Boolean,
+        default: false
+    },
+    fullArticleBtn: {
+        type: Boolean,
+        default: false
+    },
 });
 
 const authorLabel = computed(() => {
@@ -14,6 +37,34 @@ const authorLabel = computed(() => {
 const truncContent = (content) => {
     return content.length > 200 ? content.substring(0, 100) + "..." : content;
 }
+
+const isDeleting = ref(false);
+
+const deleteArticle = async () => {
+    if (isDeleting.value) return;
+    isDeleting.value = true;
+    console.log(props.article.id);
+    try {
+        const response = await customFetch(`/api/blog/articles/${props.article.id}/`, 'DELETE');
+        if (response.ok) {
+            toast.success('Article deleted successfully');
+            emit('deleted', props.article.id);
+        } else {
+            toast.error('Failed to delete article');
+        }
+    } catch (error) {
+        console.error(error);
+        toast.error('Failed to delete article');
+    } finally {
+        isDeleting.value = false;
+    }
+}
+
+const editArticle = async () => {
+    router.push(`/articles/${props.article.id}/edit`);
+}
+
+const emit = defineEmits(['deleted']);
 
 </script>
 
@@ -47,11 +98,17 @@ const truncContent = (content) => {
             </div>
 
             <div class="border border-gray-100 mb-5"></div>
-
-            <RouterLink :to="'/articles/' + article.id" class="h-[36px] bg-orange-500 hover:bg-orange-600 
-                text-white px-4 py-2 rounded-lg text-center text-sm">
-                fullArticle
-            </RouterLink>
+            <span>
+                <span v-if="fullArticleBtn" class="mr-2">
+                    <ButtonPrimary :link="'/articles/' + article.id" title="fullArticle" />
+                </span>
+                <span v-if="editBtn" class="mr-2">
+                    <ButtonSubmit @click="editArticle" title="edit" />
+                </span>
+                <span v-if="delBtn" class="mr-2">
+                    <ButtonSubmit @click="deleteArticle" title="delete" color="bg-red-700" hoverColor="bg-red-800" />
+                </span>
+            </span>
         </div>
     </div>
 

@@ -159,7 +159,7 @@ onMounted(() => {
                 <form @submit.prevent="deleteAccount">
                     <InputField lbl="password" plchldr="password" type="password"
                         v-model="deleteAccountForm.password" />
-                    <ButtonSubmit title="deleteAccount" color="bg-red-700" hoverColor="hover:bg-red-800" />
+                    <ButtonSubmit title="deleteAccount" color="bg-red-700" hoverColor="bg-red-800" />
                 </form>
 
             </div>

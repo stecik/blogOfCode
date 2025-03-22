@@ -59,7 +59,7 @@ onMounted(() => {
         </div>
 
         <div class="mt-6">
-            <ButtonPrimary link="/" />
+            <ButtonPrimary link="/" title="backToNews" />
         </div>
     </div>
 </template>

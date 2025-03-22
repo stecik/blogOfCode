@@ -17,6 +17,14 @@ class ArticlesListCreate(generics.ListCreateAPIView):
             return [IsAuthenticated()]
         return super().get_permissions()
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        author_id = self.request.query_params.get("author", None)
+        if author_id:
+            queryset = queryset.filter(authors__id=author_id)
+
+        return queryset
+
 
 class ArticleRetrieveUpdateDestroy(generics.RetrieveUpdateDestroyAPIView):
 
