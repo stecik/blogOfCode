@@ -6,6 +6,7 @@ import ButtonSubmit from './ButtonSubmit.vue';
 import InputField from './InputField.vue';
 import { customFetch } from '@/api';
 import { useRouter } from 'vue-router';
+import { compileScript } from 'vue/compiler-sfc';
 
 const toast = useToast();
 const router = useRouter();
@@ -27,8 +28,19 @@ const registerUser = async () => {
     }
     try {
         const response = await customFetch("/api/users/register/", "POST", registerForm);
+        const data = await response.json();
+        console.log(data);
         if (!response.ok) {
-            throw new Error('An error occurred');
+            console.log(data);
+            let err = ""
+            if (data.email) {
+                err = data.email[0]
+            } else if (data.username) {
+                err = data.username[0]
+            } else {
+                err = "An error occurred"
+            }
+            toast.error(err);
         }
         else {
             toast.success('User registered successfully. Please login');

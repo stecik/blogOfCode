@@ -15,6 +15,7 @@ export const customFetch = async (url, method = 'GET', body = null, headers = {}
         const options = {
             method: customMethod,
             headers,
+            credentials: 'include',
             ...(body ? { body: JSON.stringify(customBody) } : {}),
         }
         return new Request(url, options)

@@ -9,9 +9,10 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 export default defineConfig({
     plugins: [vue(), vueDevTools(), tailwindcss()],
     server: {
+        host: '0.0.0.0',
         proxy: {
             '/api': {
-                target: 'http://localhost:8000',
+                target: 'http://backend:8000',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ''),
             },

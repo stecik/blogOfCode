@@ -30,7 +30,9 @@ SECRET_KEY = "django-insecure-b$-ggsfv%vonm_61^-g=fny*$*#rw=*9g-o4zp&bk#1s0_*ej0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "backend",
+]
 
 
 # Application definition
@@ -117,7 +119,6 @@ DATABASES = {
         "PORT": os.getenv("POSTGRES_PORT"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

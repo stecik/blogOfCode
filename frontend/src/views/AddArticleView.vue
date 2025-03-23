@@ -8,9 +8,11 @@ import SelectField from '@/components/SelectField.vue';
 import Editor from 'primevue/editor';
 import { useToast } from 'vue-toastification';
 import { customFetch } from '@/api';
+import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore();
 const toast = useToast();
+const router = useRouter();
 
 const articleForm = reactive({
     title: '',
@@ -45,6 +47,7 @@ const addArticle = async () => {
             articleForm.content = '';
             articleForm.categories = [];
             articleForm.tags = [];
+            router.push('/articles/my');
         } else {
             toast.error('Article creation failed');
         }

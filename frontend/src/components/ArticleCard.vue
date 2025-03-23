@@ -41,10 +41,10 @@ const truncContent = (content) => {
 const isDeleting = ref(false);
 
 const deleteArticle = async () => {
-    if (isDeleting.value) return;
-    isDeleting.value = true;
-    console.log(props.article.id);
     try {
+        if (isDeleting.value) return;
+        isDeleting.value = true;
+        if (!confirm('Are you sure you want to delete this article?')) return;
         const response = await customFetch(`/api/blog/articles/${props.article.id}/`, 'DELETE');
         if (response.ok) {
             toast.success('Article deleted successfully');
