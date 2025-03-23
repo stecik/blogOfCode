@@ -6,8 +6,8 @@ Simple blogging app built with django, django rest framework, vue.js 3, postgres
 git clone https://github.com/stecik/blogOfCode.git blogOfCode
 cd blogOfcode
 docker compose up --build
-docker compose exec python manage.py migrate
-docker compose exec python manage.py createsuperuser
+docker compose exec backend python manage.py migrate
+docker compose exec backend python manage.py createsuperuser
 ```
 backend: localhost:8000
 
