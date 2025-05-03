@@ -69,12 +69,21 @@ const loadMore = (increment = 3) => {
 }
 
 const filterArticles = () => {
-    filteredArticles.value = filterCategory(articles.data)
+    let filtered = filterCategory(articles.data);
+    if (filterOptions.value.orderBy === 'date') {
+        filtered = filtered.sort((a, b) => {
+            return filterOptions.value.order === 'asc' ? new Date(a.created_at) - new Date(b.created_at) : new Date(b.created_at) - new Date(a.created_at);
+        });
+    }
+    else if (filterOptions.value.orderBy === 'title') {
+        filtered = filtered.sort((a, b) => {
+            return filterOptions.value.order === 'asc' ? a.title.localeCompare(b.title) : b.title.localeCompare(a.title);
+        });
+    }
+    filteredArticles.value = filtered;
 }
 
 const filterCategory = (articles) => {
-    console.log(filterOptions.value.filterCategory);
-    console.log(articles);
     if (filterOptions.value.filterCategory === 'all') {
         return articles;
     }
@@ -90,15 +99,12 @@ const filterOptions = ref({
 
 watch(filterUpdated, (newVal) => {
     if (newVal) {
-        console.log(loadedArticles.value);
         filterUpdated.value = false
         filterArticles();
         start.value = 0;
         end.value = 3;
         loadedArticles.value = [];
-        console.log(loadedArticles.value);
         loadMore();
-        console.log(loadedArticles.value);
     }
 })
 
@@ -116,7 +122,6 @@ onMounted(async () => {
 <template>
     <FilterBar v-model:filterOptions="filterOptions" v-model:updated="filterUpdated" />
     <section class="px-4 py-10">
-        <div>{{ filterUpdated }}</div>
         <div class="container-xl lg:container m-auto">
             <div v-if="articles.isLoading" class="text-center text-gray-500 py-6">
                 <PulseLoader color="#d97706" />

@@ -31,13 +31,13 @@ onMounted(() => {
     getCategories();
 });
 
-const emit = defineEmits(['update:updated']);
+const emit = defineEmits(['update:updated', 'update:filterOptions']);
 </script>
 
 <template>
     <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
         <div>
-            <SelectField v-model="filter.orderBy" lbl="orderBy" :options="['date', 'title', 'author']" />
+            <SelectField v-model="filter.orderBy" lbl="orderBy" :options="['date', 'title']" />
         </div>
 
         <div>
