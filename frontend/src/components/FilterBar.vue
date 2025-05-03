@@ -3,12 +3,13 @@ import { ref, onMounted, reactive } from 'vue'
 import ButtonSubmit from './ButtonSubmit.vue';
 import SelectField from './SelectField.vue';
 import { customFetch } from '@/api';
+import { defineEmits } from 'vue';
 
 const categories = ref(["all"]);
 const filter = reactive({
-    orderBy: 'date',
-    order: 'desc',
-    filterCategory: 'all',
+    orderBy: "date",
+    order: "desc",
+    filterCategory: "all",
 });
 
 const getCategories = async () => {
@@ -21,20 +22,16 @@ const getCategories = async () => {
     }
 }
 
-const saveFilterOptions = () => {
-    const filterOptions = {
-        orderBy: filter.orderBy,
-        order: filter.order,
-        filterCategory: filter.filterCategory,
-    };
-    localStorage.setItem('filterOptions', JSON.stringify(filterOptions));
+const emitFilterOptions = () => {
+    emit('update:updated', true)
+    emit('update:filterOptions', { ...filter })
 }
 
 onMounted(() => {
     getCategories();
 });
 
-
+const emit = defineEmits(['update:updated']);
 </script>
 
 <template>
@@ -52,7 +49,7 @@ onMounted(() => {
         </div>
 
         <div class="mt-1.5">
-            <ButtonSubmit title="filter" :on="saveFilterOptions" />
+            <ButtonSubmit title="filter" @click="emitFilterOptions" />
         </div>
     </div>
 </template>

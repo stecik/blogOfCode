@@ -4,6 +4,8 @@ import PulseLoader from 'vue-spinner/src/PulseLoader.vue';
 import ArticleCard from "@/components/ArticleCard.vue";
 import { customFetch } from '@/api';
 import ButtonSubmit from './ButtonSubmit.vue';
+import FilterBar from './FilterBar.vue';
+import { watch } from 'vue';
 
 const props = defineProps({
     editBtn: {
@@ -30,13 +32,8 @@ const articles = reactive({
     isLoading: false
 });
 
-const filterOptions = reactive(localStorage.getItem('filterOptions') ? JSON.parse(localStorage.getItem('filterOptions')) : {
-    orderBy: 'date',
-    order: 'desc',
-    filterCategory: 'all',
-});
-
 const loadedArticles = ref([]);
+const filteredArticles = ref([]);
 
 const removeArticle = (id) => {
     loadedArticles.value = loadedArticles.value.filter(article => article.id !== id);
@@ -63,7 +60,7 @@ const start = ref(0);
 const end = ref(3);
 
 const loadMore = (increment = 3) => {
-    const data = articles.data.slice(start.value, end.value);
+    const data = filteredArticles.value.slice(start.value, end.value);
     start.value = end.value;
     end.value += increment;
     if (data.length > 0) {
@@ -71,18 +68,55 @@ const loadMore = (increment = 3) => {
     }
 }
 
+const filterArticles = () => {
+    filteredArticles.value = filterCategory(articles.data)
+}
+
+const filterCategory = (articles) => {
+    console.log(filterOptions.value.filterCategory);
+    console.log(articles);
+    if (filterOptions.value.filterCategory === 'all') {
+        return articles;
+    }
+    return articles.filter(article => article.categories_display.includes(filterOptions.value.filterCategory));
+}
+
+const filterUpdated = ref(false);
+const filterOptions = ref({
+    orderBy: 'date',
+    order: 'desc',
+    filterCategory: 'all',
+});
+
+watch(filterUpdated, (newVal) => {
+    if (newVal) {
+        console.log(loadedArticles.value);
+        filterUpdated.value = false
+        filterArticles();
+        start.value = 0;
+        end.value = 3;
+        loadedArticles.value = [];
+        console.log(loadedArticles.value);
+        loadMore();
+        console.log(loadedArticles.value);
+    }
+})
+
 
 onMounted(async () => {
     await getArticles();
+    filterArticles();
     loadMore();
 })
+
+
 </script>
 
 
 <template>
-
-
+    <FilterBar v-model:filterOptions="filterOptions" v-model:updated="filterUpdated" />
     <section class="px-4 py-10">
+        <div>{{ filterUpdated }}</div>
         <div class="container-xl lg:container m-auto">
             <div v-if="articles.isLoading" class="text-center text-gray-500 py-6">
                 <PulseLoader color="#d97706" />
