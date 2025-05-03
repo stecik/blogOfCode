@@ -1,6 +1,6 @@
 <script setup>
 import ArticleList from "@/components/ArticlesList.vue";
-
+import FilterBar from "@/components/FilterBar.vue";
 
 </script>
 <template>
@@ -9,5 +9,6 @@ import ArticleList from "@/components/ArticlesList.vue";
             news
         </h2>
     </div>
+    <FilterBar />
     <ArticleList :fullArticleBtn="true" />
 </template>

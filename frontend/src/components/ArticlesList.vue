@@ -30,6 +30,12 @@ const articles = reactive({
     isLoading: false
 });
 
+const filterOptions = reactive(localStorage.getItem('filterOptions') ? JSON.parse(localStorage.getItem('filterOptions')) : {
+    orderBy: 'date',
+    order: 'desc',
+    filterCategory: 'all',
+});
+
 const loadedArticles = ref([]);
 
 const removeArticle = (id) => {
