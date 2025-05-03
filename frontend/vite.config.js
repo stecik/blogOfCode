@@ -6,13 +6,15 @@ import vue from '@vitejs/plugin-vue'
 import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
+
+// target: 'http://backend:8000' for docker-compose
 export default defineConfig({
     plugins: [vue(), vueDevTools(), tailwindcss()],
     server: {
         host: '0.0.0.0',
         proxy: {
             '/api': {
-                target: 'http://backend:8000',
+                target: 'http://localhost:8000',
                 changeOrigin: true,
                 rewrite: (path) => path.replace(/^\/api/, ''),
             },
