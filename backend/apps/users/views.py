@@ -63,6 +63,20 @@ class UserHintView(APIView):
         return Response(usernames)
 
 
+class UsernameToIdView(APIView):
+    permission_classes = [AllowAny]
+    queryset = CustomUser.objects.all()
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        username = request.data.get("username")
+        try:
+            user = CustomUser.objects.get(username=username)
+            return Response({"id": user.id})
+        except CustomUser.DoesNotExist:
+            return Response({"error": "User not found"}, status=404)
+
+
 class ChangePasswordView(generics.UpdateAPIView):
     serializer_class = ChangePasswordSerializer
     permission_classes = [IsAuthenticated]

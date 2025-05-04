@@ -1,7 +1,7 @@
 <script setup>
 import { defineProps, defineEmits } from 'vue';
 
-const props = defineProps({
+defineProps({
     title: String,
     color: {
         type: String,
@@ -14,16 +14,20 @@ const props = defineProps({
     width: {
         type: String,
         default: ""
+    },
+    type: {
+        type: String,
+        default: "submit"
     }
 });
 
-const emit = defineEmits();
+const emit = defineEmits("click");
 
 
 </script>
 
 <template>
-    <button type="submit" :class="[color, `hover:${hoverColor}`, width]" class=" hover:cursor-pointer text-white 
+    <button :type="type" :class="[color, `hover:${hoverColor}`, width]" class=" hover:cursor-pointer text-white
     font-bold py-1.5 px-4 rounded focus:outline-none focus:shadow-outline" @click="emit('click')">
         {{ title }}
     </button>

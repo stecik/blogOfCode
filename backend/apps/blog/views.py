@@ -22,7 +22,6 @@ class ArticlesListCreate(generics.ListCreateAPIView):
         author_id = self.request.query_params.get("author", None)
         if author_id:
             queryset = queryset.filter(authors__id=author_id)
-
         return queryset
 
 
