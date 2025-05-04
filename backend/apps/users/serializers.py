@@ -31,6 +31,13 @@ class UserSerializer(serializers.ModelSerializer):
         return instance
 
 
+class UserHintSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ["username"]
+        read_only_fields = ["username"]
+
+
 class ChangePasswordSerializer(serializers.Serializer):
     old_password = serializers.CharField(write_only=True, required=True)
     new_password = serializers.CharField(write_only=True, required=True)

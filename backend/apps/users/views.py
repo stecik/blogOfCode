@@ -5,11 +5,16 @@ from .serializers import (
     UserSerializer,
     CustomTokenObtainPairSerializer,
     ChangePasswordSerializer,
+    UserHintSerializer,
 )
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework import generics
+from rest_framework.views import APIView
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
+from django.core.cache import cache
+import pickle
+from marisa_trie import Trie
 
 CustomUser = get_user_model()
 
@@ -36,6 +41,26 @@ class UserRetrieveUpdateDestroyView(generics.RetrieveUpdateDestroyAPIView):
             return Response({"error": "Incorrect password."}, status=400)
         user.delete()
         return Response({"detail": "User deleted successfully"}, status=204)
+
+
+class UserHintView(APIView):
+    serializer_class = UserHintSerializer
+    permission_classes = [AllowAny]
+    queryset = CustomUser.objects.all()
+    http_method_names = ["post"]
+
+    def post(self, request, *args, **kwargs):
+        prefix = request.data.get("prefix")
+        cache_key = "usernames"
+        cached_usernames = cache.get(cache_key)
+        if cached_usernames:
+            cached_usernames = pickle.loads(cached_usernames)
+            return Response(cached_usernames.keys(prefix))
+        usernames = CustomUser.objects.values_list("username", flat=True)
+        trie = Trie(usernames)
+        cache.set(cache_key, pickle.dumps(trie), timeout=60)
+        usernames = trie.keys(prefix)
+        return Response(usernames)
 
 
 class ChangePasswordView(generics.UpdateAPIView):
