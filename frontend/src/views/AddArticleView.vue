@@ -137,8 +137,13 @@ watch(coAuthorField, () => {
         hints.value = [];
         return;
     }
-
-    getHints();
+    setTimeout(() => {
+        if (coAuthorField.value.length < 1) {
+            hints.value = [];
+            return;
+        }
+        getHints();
+    }, 500);
 });
 
 onMounted(() => {
